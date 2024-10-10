@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOTNET_CLI_HOME = '/usr/bin/dotnet'
+        DOTNET_CLI_HOME = '/home/jenkins/.dotnet' // Thay đổi đường dẫn này
     }
 
     stages {
@@ -15,11 +15,11 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Restoring dependencies
-                    sh "${DOTNET_CLI_HOME} restore"
+                    // Khôi phục các phụ thuộc
+                    sh "dotnet restore"
 
-                    // Building the application
-                    sh "${DOTNET_CLI_HOME} build --configuration Release"
+                    // Xây dựng ứng dụng
+                    sh "dotnet build --configuration Release"
                 }
             }
         }
@@ -27,8 +27,8 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Running tests
-                    sh "${DOTNET_CLI_HOME} test --no-restore --configuration Release"
+                    // Chạy các bài kiểm tra
+                    sh "dotnet test --no-restore --configuration Release"
                 }
             }
         }
@@ -36,8 +36,8 @@ pipeline {
         stage('Publish') {
             steps {
                 script {
-                    // Publishing the application
-                    sh "${DOTNET_CLI_HOME} publish --no-restore --configuration Release --output ./publish"
+                    // Xuất bản ứng dụng
+                    sh "dotnet publish --no-restore --configuration Release --output ./publish"
                 }
             }
         }
@@ -46,6 +46,12 @@ pipeline {
     post {
         success {
             echo 'Build, test, and publish successful!'
+        }
+        failure {
+            echo 'Build, test, or publish failed!'
+        }
+        always {
+            echo 'Pipeline finished.'
         }
     }
 }
