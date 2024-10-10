@@ -4,8 +4,9 @@ pipeline {
     environment {
         // Định nghĩa biến môi trường
         REMOTE_HOST = '192.168.64.100'  // Địa chỉ IP của máy chủ
-        REMOTE_USER = 'linhpv'    // Tên người dùng để SSH
-        REMOTE_PATH = '/var/www/myapp'   // Đường dẫn trên máy chủ nơi bạn muốn triển khai
+        REMOTE_USER = 'linhpv'           // Tên người dùng để SSH
+        REMOTE_PATH = '/var/www/myapp'    // Đường dẫn trên máy chủ nơi bạn muốn triển khai
+        SSH_PASS = '4321'        // Thay bằng mật khẩu SSH của bạn (nếu cần)
     }
 
     stages {
@@ -25,14 +26,17 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    // Cài đặt sshpass nếu chưa có (nếu cần)
+                    sh 'sudo apt-get install -y sshpass'
+
                     // Sao chép các tệp đã xuất bản lên máy chủ
                     sh """
-                        scp -r ./publish/* ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}
+                        sshpass -p ${SSH_PASS} scp -o StrictHostKeyChecking=no -r ./publish/* ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}
                     """
 
                     // Khởi động lại ứng dụng trên máy chủ
                     sh """
-                        ssh ${REMOTE_USER}@${REMOTE_HOST} 'cd ${REMOTE_PATH} && dotnet QLCuaHangBanSach.dll &'
+                        sshpass -p ${SSH_PASS} ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} 'cd ${REMOTE_PATH} && dotnet QLCuaHangBanSach.dll &'
                     """
                 }
             }
