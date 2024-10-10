@@ -2,58 +2,56 @@ pipeline {
     agent any
 
     environment {
-        // Định nghĩa biến môi trường
-        REMOTE_HOST = '192.168.64.100'  // Địa chỉ IP của máy chủ
-        REMOTE_USER = 'linhpv'           // Tên người dùng để SSH
-        REMOTE_PATH = '/var/www/myapp'   // Đường dẫn trên máy chủ nơi bạn muốn triển khai
-        SSH_PASS = '4321'                // Mật khẩu SSH
+        DOTNET_CLI_HOME = '/home/jenkins/.dotnet' // Thay đổi đường dẫn này
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Lấy mã nguồn từ Git
                 checkout scm
             }
         }
+
         stage('Build') {
             steps {
-                // Khôi phục và xây dựng ứng dụng
-                sh 'dotnet restore'
-                sh 'dotnet publish --no-restore --configuration Release --output ./publish'
-            }
-        }
-        stage('Deploy') {
-            steps {
                 script {
-                    // Sao chép các tệp đã xuất bản lên máy chủ
-                    sh """
-                        scp -o StrictHostKeyChecking=no -r ./publish/* ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}
-                    """
+                    // Khôi phục các phụ thuộc
+                    sh "dotnet restore"
 
-                    // Khởi động lại ứng dụng trên máy chủ
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} 'cd ${REMOTE_PATH} && dotnet QLCuaHangBanSach.dll &'
-                    """
+                    // Xây dựng ứng dụng
+                    sh "dotnet build --configuration Release"
                 }
             }
         }
-        stage('Notify') {
+
+        stage('Test') {
             steps {
-                // Thông báo về tình trạng triển khai
-                echo 'Deployment completed!'
+                script {
+                    // Chạy các bài kiểm tra
+                    sh "dotnet test --no-restore --configuration Release"
+                }
+            }
+        }
+
+        stage('Publish') {
+            steps {
+                script {
+                    // Xuất bản ứng dụng
+                    sh "dotnet publish --no-restore --configuration Release --output ./publish"
+                }
             }
         }
     }
 
     post {
-        always {
-            // Thông báo khi hoàn thành pipeline
-            echo 'Pipeline finished.'
+        success {
+            echo 'Build, test, and publish successful!'
         }
         failure {
-            // Thông báo khi có lỗi
-            echo 'Build failed!'
+            echo 'Build, test, or publish failed!'
+        }
+        always {
+            echo 'Pipeline finished.'
         }
     }
 }
