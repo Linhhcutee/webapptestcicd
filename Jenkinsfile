@@ -47,13 +47,12 @@ pipeline {
                 script {
                     // Kill process đang chạy (nếu có)
                     sh "fuser -k 5000/tcp || true" // Giả sử ứng dụng chạy trên cổng 5000
-
+        
                     // Chạy ứng dụng đã publish
-                    sh "dotnet ./publish/yourapp.dll --urls=http://*:5000 &"
+                    sh "dotnet ./publish/QLCuaHangBanSach.dll --urls=http://*:5000 &"
+                    }
                 }
             }
-        }
-    }
 
     post {
         success {
