@@ -50,9 +50,10 @@ pipeline {
         
                     // Chạy ứng dụng đã publish
                     sh "dotnet ./publish/QLCuaHangBanSach.dll --urls=http://*:5000 &"
-                    }
                 }
             }
+        }
+    }
 
     post {
         success {
