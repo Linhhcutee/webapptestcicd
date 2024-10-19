@@ -47,9 +47,9 @@ pipeline {
                 script {
                     // Kill process đang chạy (nếu có)
                     sh "fuser -k 5000/tcp || true" // Giả sử ứng dụng chạy trên cổng 5000
-        
-                    // Chạy ứng dụng đã publish
-                    sh "dotnet ./publish/QLCuaHangBanSach.dll --urls=http://*:5000 &"
+
+                    // Chạy ứng dụng đã publish với URL lắng nghe trên mọi địa chỉ IP
+                    sh "nohup dotnet ./publish/QLCuaHangBanSach.dll --urls=\"http://*:5000;https://*:5001\" > /dev/null 2>&1 &"
                 }
             }
         }
