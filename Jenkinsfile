@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOTNET_CLI_HOME = '/home/jenkins/.dotnet' // Thay đổi đường dẫn này
+        DOTNET_CLI_HOME = '/home/jenkins/.dotnet' // Thay đổi đường dẫn này nếu cần
     }
 
     stages {
@@ -41,14 +41,26 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Kill process đang chạy (nếu có)
+                    sh "fuser -k 5000/tcp || true" // Giả sử ứng dụng chạy trên cổng 5000
+        
+                    // Chạy ứng dụng đã publish
+                    sh "dotnet ./publish/QLCuaHangBanSach.dll --urls=http://*:5000 &"
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo 'Build, test, and publish successful!'
+            echo 'Build, test, publish, and deploy successful!'
         }
         failure {
-            echo 'Build, test, or publish failed!'
+            echo 'Build, test, publish, or deploy failed!'
         }
         always {
             echo 'Pipeline finished.'
