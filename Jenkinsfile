@@ -15,6 +15,8 @@ pipeline {
         stage('Build') {
             steps {
                 script {
+                    // Thêm gói Pomelo.EntityFrameworkCore.MySql
+                    sh "dotnet add package Pomelo.EntityFrameworkCore.MySql"
                     // Khôi phục các phụ thuộc
                     sh "dotnet restore"
 
