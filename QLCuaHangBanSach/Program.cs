@@ -1,10 +1,12 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using QLCuaHangBanSach.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<DBCuaHangBanSachContext>(options => options
-.UseSqlServer(builder.Configuration.GetConnectionString("DBCuaHangBanSachContext")));
+// Thay đổi từ UseSqlServer thành UseMySql
+builder.Services.AddDbContext<DBCuaHangBanSachContext>(options =>
+	options.UseMySql(builder.Configuration.GetConnectionString("DBCuaHangBanSachContext"),
+	new MySqlServerVersion(new Version(8, 0, 23)))); // Đặt phiên bản MySQL tương ứng
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -15,7 +17,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
 	app.UseExceptionHandler("/Home/Error");
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
 }
 
