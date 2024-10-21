@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Thay đổi từ UseSqlServer thành UseMySql
 builder.Services.AddDbContext<DBCuaHangBanSachContext>(options =>
 	options.UseMySql(builder.Configuration.GetConnectionString("DBCuaHangBanSachContext"),
-	new MySqlServerVersion(new Version(8, 0, 23)))); // Đặt phiên bản MySQL tương ứng
+	new MySqlServerVersion(new Version(6, 0, 1)))); // Đặt phiên bản MySQL tương ứng
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
