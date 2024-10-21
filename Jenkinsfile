@@ -15,23 +15,11 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Kiểm tra nội dung thư mục gốc
-                    sh "ls -al /var/lib/jenkins/workspace/webapp/"
-                    
-                    // Chuyển đến thư mục chứa file .csproj
-                    dir('src/QLCuaHangBanSach') { // Điều chỉnh đường dẫn nếu cần
-                        // Kiểm tra nội dung thư mục
-                        sh "ls -al"
-
-                        // Thêm gói Pomelo.EntityFrameworkCore.MySql
-                        sh "dotnet add package Pomelo.EntityFrameworkCore.MySql"
-
                         // Khôi phục các phụ thuộc
                         sh "dotnet restore"
 
                         // Xây dựng ứng dụng
                         sh "dotnet build --configuration Release"
-                    }
                 }
             }
         }
