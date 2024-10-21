@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOTNET_CLI_HOME = '/home/jenkins/.dotnet'
+        DOTNET_CLI_HOME = '/home/jenkins/.dotnet' // Thay đổi đường dẫn này nếu cần
     }
 
     stages {
@@ -15,11 +15,11 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                        // Khôi phục các phụ thuộc
-                        sh "dotnet restore"
+                    // Khôi phục các phụ thuộc
+                    sh "dotnet restore"
 
-                        // Xây dựng ứng dụng
-                        sh "dotnet build --configuration Release"
+                    // Xây dựng ứng dụng
+                    sh "dotnet build --configuration Release"
                 }
             }
         }
@@ -27,10 +27,8 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    dir('src/QLCuaHangBanSach') { // Điều chỉnh đường dẫn nếu cần
-                        // Chạy các bài kiểm tra
-                        sh "dotnet test --no-restore --configuration Release"
-                    }
+                    // Chạy các bài kiểm tra
+                    sh "dotnet test --no-restore --configuration Release"
                 }
             }
         }
@@ -38,10 +36,8 @@ pipeline {
         stage('Publish') {
             steps {
                 script {
-                    dir('src/QLCuaHangBanSach') { // Điều chỉnh đường dẫn nếu cần
-                        // Xuất bản ứng dụng
-                        sh "dotnet publish -c Release --no-restore --output ./publish"
-                    }
+                    // Xuất bản ứng dụng
+                    sh "dotnet publish --no-restore --configuration Release --output ./publish"
                 }
             }
         }
@@ -49,13 +45,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    dir('src/QLCuaHangBanSach') { // Điều chỉnh đường dẫn nếu cần
-                        // Kill process đang chạy (nếu có)
-                        sh "fuser -k 5000/tcp || true"
-
-                        // Chạy ứng dụng đã publish với URL lắng nghe trên mọi địa chỉ IP
-                        sh "nohup dotnet ./publish/QLCuaHangBanSach.dll --urls=\"http://*:5000;https://*:5001\" > /dev/null 2>&1 &"
-                    }
+                    // Kill process đang chạy (nếu có)
+                    sh "fuser -k 5000/tcp || true" // Giả sử ứng dụng chạy trên cổng 5000
+        
+                    // Chạy ứng dụng đã publish
+                    sh "dotnet ./publish/QLCuaHangBanSach.dll --urls=http://*:5000 &"
                 }
             }
         }
