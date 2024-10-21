@@ -15,13 +15,17 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Thêm gói Pomelo.EntityFrameworkCore.MySql
-                    sh "dotnet add package Pomelo.EntityFrameworkCore.MySql"
-                    // Khôi phục các phụ thuộc
-                    sh "dotnet restore"
-
-                    // Xây dựng ứng dụng
-                    sh "dotnet build --configuration Release"
+                    // Chuyển đến thư mục chứa file .csproj
+                    dir('src') {
+                        // Thêm gói Pomelo.EntityFrameworkCore.MySql
+                        sh "dotnet add package Pomelo.EntityFrameworkCore.MySql"
+        
+                        // Khôi phục các phụ thuộc
+                        sh "dotnet restore"
+        
+                        // Xây dựng ứng dụng
+                        sh "dotnet build --configuration Release"
+                    }
                 }
             }
         }
